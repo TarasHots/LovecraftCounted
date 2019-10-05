@@ -1,5 +1,6 @@
 import requests
 import operator
+import collections
 from lxml import html
 
 url = 'http://www.hplovecraft.com/writings/texts/fiction/og.aspx'
@@ -17,18 +18,10 @@ text = 'Atop the tallest of earth’s peaks dwell the gods of earth, and suffer 
 
 # 1.Remove non alphanumerical characters. Keep spaces only
 
-alpha_text = text.replace('—', '').replace('()', '').replace('.', '').replace(',', '').replace(';', '')
+alpha_text = text.replace('—', '').replace('()', '').replace('.', '').replace(',', '').replace(';', '').split(' ')
 
 # 2.Count words
 
-counts = {}
+counter = collections.Counter(alpha_text)
 
-for word in alpha_text.split(' '):
-    if word in counts:
-        counts[word] += 1
-    else:
-        counts[word] = 1
-
-sorted_words = sorted(counts.items(), key=operator.itemgetter(1), reverse=bool('true'))
-
-print(sorted_words)
+print(counter.most_common(10))
