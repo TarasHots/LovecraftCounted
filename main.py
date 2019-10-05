@@ -1,20 +1,29 @@
 import requests
-import operator
 import collections
 from lxml import html
 
 url = 'http://www.hplovecraft.com/writings/texts/fiction/og.aspx'
 
-# page = requests.get(url)
-# tree = html.fromstring(page.content)
-#
-# text = tree.xpath("//div[@align='justify']")[1]
+page = requests.get(url)
+tree = html.fromstring(page.content)
 
-text = 'Atop the tallest of earth’s peaks dwell the gods of earth, and suffer no man to tell that he hath looked ' \
-       'upon them. Lesser peaks they once inhabited; but ever the men from the plains would scale the slopes of rock ' \
-       'and snow, driving the gods to higher and higher mountains till now only the last remains. When they left' \
-       ' their older peaks they took with them all signs of themselves; save once, it is said, when they left' \
-       ' a carven image on the face of the mountain which they called Ngranek.'
+# Contains div with text mixed with tags
+
+main_text = tree.xpath("//div[@align='justify']")[1]
+
+actually_text = main_text.text
+
+for child in main_text.getchildren():
+    if child.tag == 'br':
+        continue
+    elif child.tag == 'img':
+        actually_text += ' ' + child.tail
+    elif child.tag == 'i':
+        actually_text += ' ' + child.text
+
+# Clean a bit
+
+text = actually_text.strip().replace('\r\n', ' ')
 
 # 1.Remove non alphanumerical characters. Keep spaces only
 
